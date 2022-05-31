@@ -1,9 +1,13 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Homepage</h1>
+<div>
+{% if request.user.is_authenticated %}
+<a href="{% url 'logoutuser' %}">Logout</a>
+{% else %}
 <a href="{% url 'loginuser' %}">Login</a>
 <a href="{% url 'registerUser' %}">Register</a>
-
+{% endif %}
+</div>
 Hello, {{ user.mobile|default:'Guest' }}!
 {% endblock %}

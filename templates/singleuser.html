@@ -1,0 +1,8 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h1>Single USEr Data</h1>
+{% for u in user %}
+<li>{{s}} <a href="{% url 'singleuser' u.id %}">View</a></li>
+{% endfor %}
+{% endblock %}

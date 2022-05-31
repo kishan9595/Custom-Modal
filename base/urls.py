@@ -6,9 +6,11 @@ urlpatterns = [
     path('', dashboard, name="home"),
     path('loginuser/', loginuser, name='loginuser'),
     path('registerUser/', registerUser, name='registerUser'),
+    path('alluser/', alluser, name='alluser'),
+    path('logoutuser/', logoutUser, name="logoutuser"),
     path('createuser/', createUser, name="createuseer"),
 
-    path('updateuser/<str:pk>/', updateUser, name="updateuser"),
+    path('updateuser/<str:id>/', updateUser, name="updateuser"),
 
-    path('deleteuser/<str:pk>/', deleteUser, name="deleteuser"),
+    path('singleuser/<str:id>/', singleuser, name="singleuser"),
 ]

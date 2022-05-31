@@ -1,52 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .forms import *
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate,logout
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
-def dashboard(request):
-    return render(request, "dashboard.html")
-
-def user_profile(request):
-    if request.method == "POST":
-       if request.user.is_superuser == True:
-            profile = UserForm(request.POST, instance=request.user)
-       else:
-            profile = UserForm(request.POST, instance=request.user)    
-    if profile.is_valid():
-        profile.save()
-    else:
-        HttpResponse('You are not a superuser, So not update the profile')
-    context = {'profile':profile}
-    return render(request, 'signup.html', context)
-
-def registerUser(request):
-    form = UserForm()
-
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        print("RES", request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            # user.mobile = user.mobile
-            # user.email = user.email
-            username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, email=email, password=password)
-            # user.password = make_password(user.password)
-            user.save()
-
-            login(request, user)
-            return redirect('home')
-
-        else:
-            HttpResponse('An error has come during registration. please check Mobile & password')
-
-    context = {'form':form}
-    return render(request, 'signup.html', context)
+# from .decorator import superuser_required
 
 def loginuser(request):
     if request.method == "POST":
@@ -63,11 +22,54 @@ def loginuser(request):
         else:
             return HttpResponse(" Username & password is incorrect")
 
-    return render(request, 'login.html')    
+    return render(request, 'login.html')  
+
+def logoutUser(request):
+    logout(request)
+    return redirect('loginuser')
+
+def alluser(request):
+    user = User.objects.all()
+    context = {"user":user}
+    return render(request, 'alluser.html', context)
+    
+def dashboard(request):
+    return render(request, "dashboard.html")
 
 
+def update_profile(request):
+    if request.method == "POST":
+       if request.user.is_superuser == True:
+            profile = UserForm(request.POST, instance=request.user)
+       else:
+            profile = UserForm(request.POST, instance=request.user)    
+    if profile.is_valid():
+        profile.save()
+    else:
+        HttpResponse('You are not a superuser, So not update the profile')
+    context = {'profile':profile}
+    return render(request, 'signup.html', context)
+
+def registerUser(request):
+    print("User", request.user)
+    if request.method == "POST":
+        print("RES", request.POST)
+        try:
+            mob = User.objects.get(mobile=request.POST['mobile'])
+            context = {
+                'mob':mob,
+            }
+            return render(request, 'signup.html', context)
+        except User.DoesNotExist:    
+            mob = User.objects.create(mobile=request.POST['mobile'],username=request.POST['username'] ,password=request.POST['password'])
+            login(request, mob)
+            mob.save()
+            return redirect('home')
+    else:
+        HttpResponse('An error has come during registration. please check Mobile & password') 
+    return render(request, 'signup.html')    
+  
 def createUser(request):
-    form = UserForm()
 
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -79,26 +81,25 @@ def createUser(request):
     context = {'form':form}    
     return render(request, "", context)
 
-def updateUser(request, pk):
-    user = User.objects.get(id=pk)
-    form = UserForm(instance=user)
-
+def updateUser(request, id):
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            user = form.save()
+        user = User.objects.get(id=id)
+        if request.user.is_superuser == True:
+            profile = User.objects.get(request.POST, instance=user)
+            profile.save()
 
-            return redirect('')
+            return redirect('alluser')
 
-    context = {'form':form, 'user':user}
-    return render(request, "", context)
+    context = {'user':user}
+    return render(request, "alluser.html", context)
 
-def deleteUser(request, pk):
-    user = User.objects.get(id=pk)
+def singleuser(request, id):
+    # user = User.objects.get(id=request.GET.get(id))
+    user = User.objects.get(id=id)
     if request.method == 'POST':
-        user.delete()
-        return redirect('')
-
-    context = {'object': user}
-    return render(request, '', context)
+        user = User(instance=user)
+        user.save()
+        return redirect('alluser')
+    context = {'user': user}
+    return render(request, 'singleuser.html', context)
 
