@@ -19,19 +19,26 @@
         <li class="nav-item">
             <a class="navbar-nav mr-auto px-3" href="{% url 'alluser' %}">Users</a>
         </li>
+        {% if request.user.is_superuser %}
+        <li class="nav-item">
+          <a class="navbar-nav mr-auto px-3" href="{% url 'createuser' %}">CreateUser</a>
+        </li>
+        {% else %}
+        {% endif %}
         {% else %}
         <li class="nav-item">
           <a class="navbar-nav mr-auto px-3" href="{% url 'loginuser' %}">Login</a>
         </li>
-        
         <li class="nav-item">
           <a class="navbar-nav mr-auto px-3" href="{% url 'registerUser' %}">Register</a>
         </li>
+      
         {% endif %}
       </ul>
     </div>
   </nav>
 <div>
 {% block content %}
+
 
 {% endblock %}

@@ -2,7 +2,29 @@
 
 {% block content %}
 <h1>ALL USEr Data</h1>
+
+<table>
+    <tr>
+        <th>user</th>
+        <th>mobile</th>
+        <th>Permissions</th>
+    </tr>
+
 {% for u in user %}
-<li>{{u}} <a href="{% url 'singleuser' u.id %}">View</a></li>
+<tr>
+    <td>{{u.username}}</td>
+    {% if request.user.is_superuser %}
+    <td> <a href="{% url 'singleuser' u.id %}">{{u.mobile}}</a></td>
+    <!-- <td><a href="{% url 'createuser' %}">Create</a></td> -->
+    <td><a href="{% url 'updateuser' u.id %}">Update</a></td>
+    
+    <td><a href="{% url 'deleteuser' u.id %}">Delete</a></td>
+    {% else %}
+    <td> <a href="{% url 'singleuser' u.id %}">{{u.mobile}}</a></td>
+    <td> <a href="#">permission denied</a></td>
+    {% endif %}
+</tr>
+
 {% endfor %}
+</table>
 {% endblock %}

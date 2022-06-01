@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+{% block content %}
+
+
+<main class="formPage my-xl">
+  <h2 style="text-align:center;">Add User</h2>
+    <div class="content-box">
+        <div class="formWrapper">
+            <a class="backButton" href="{% url 'updateuser' user.id %}"></a>
+            <br>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <!-- Input:Text -->
+                <div class="form__field">
+                    <label for="formInput#text">{{field.label}}</label>
+                    {{field}}
+                <!-- <label class="form-check-label" for="form2Example3">
+                    I agree all statements in <a href="#!">Terms of service</a>
+                </label> -->
+                </div>
+                {% endfor %}
+
+                <input class="btn btn--sub btn--lg  my-md" type="submit" value="Submit" />
+            </form>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

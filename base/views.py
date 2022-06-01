@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 # from .decorator import superuser_required
 
 def loginuser(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == "POST":
         mobile = request.POST['mobile']
         password = request.POST['password']
-    # try:
-    #     user = User.objects.get(mobile=mobile)
-    # except:
-        user = authenticate(request, mobile=mobile, password=password)
+        try:
+            user = User.objects.get(mobile=mobile)
+        except:
+            user = authenticate(request, mobile=mobile, password=password)
 
         if user is not None:
             login(request, user)
@@ -28,6 +30,7 @@ def logoutUser(request):
     logout(request)
     return redirect('loginuser')
 
+# @superuser_required()
 def alluser(request):
     user = User.objects.all()
     context = {"user":user}
@@ -69,37 +72,41 @@ def registerUser(request):
         HttpResponse('An error has come during registration. please check Mobile & password') 
     return render(request, 'signup.html')    
   
-def createUser(request):
-
-    if request.method == 'POST':
+def createuser(request):
+    form = UserForm()
+    if request.method == "POST":
         form = UserForm(request.POST)
-        if form.is_valid:
-            user = form.save(commit=False)
-            user.save()
-
-            return redirect('login')
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     context = {'form':form}    
-    return render(request, "", context)
+    return render(request, "userform.html", context)
 
-def updateUser(request, id):
+def updateuser(request, id):
+    user = User.objects.get(id=id)
+    form = UserForm(instance=user)
+
     if request.method == 'POST':
-        user = User.objects.get(id=id)
-        if request.user.is_superuser == True:
-            profile = User.objects.get(request.POST, instance=user)
-            profile.save()
 
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
             return redirect('alluser')
 
-    context = {'user':user}
-    return render(request, "alluser.html", context)
+    context = {'form':form ,'user':user}
+    return render(request, "userform.html", context)
 
 def singleuser(request, id):
     # user = User.objects.get(id=request.GET.get(id))
-    user = User.objects.get(id=id)
-    if request.method == 'POST':
-        user = User(instance=user)
-        user.save()
-        return redirect('alluser')
+    user = User.objects.filter(id=id)
     context = {'user': user}
     return render(request, 'singleuser.html', context)
 
+def deleteuser(request, id):
+    user = User.objects.get(id=id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('alluser')
+    return render(request, 'delete.html',  {
+        "user":user,
+    })

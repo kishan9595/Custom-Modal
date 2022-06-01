@@ -8,9 +8,9 @@ urlpatterns = [
     path('registerUser/', registerUser, name='registerUser'),
     path('alluser/', alluser, name='alluser'),
     path('logoutuser/', logoutUser, name="logoutuser"),
-    path('createuser/', createUser, name="createuseer"),
-
-    path('updateuser/<str:id>/', updateUser, name="updateuser"),
+    path('createuser/', createuser, name="createuser"),
+    path('deleteuser/<str:id>/', deleteuser, name="deleteuser"),
+    path('updateuser/<str:id>/', updateuser, name="updateuser"),
 
     path('singleuser/<str:id>/', singleuser, name="singleuser"),
 ]
